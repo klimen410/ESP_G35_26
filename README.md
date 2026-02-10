@@ -5,7 +5,7 @@ This repository will have multiple parts to it:
 2. Testing
 3. Heat
 
-# Base:
+# Base
 Main classes and templates will be in this section, no complex functionalities should be placed here, as it is just for declarations of variables and base functionalities.
 
 Components present:
