@@ -2,9 +2,9 @@
 
 This repository will have multiple parts to it: 
 1. Base
-2. Testing
-3. Heat
-
+2. Prototyping/Testing
+3. Final Code
+   
 # Base
 Main classes and templates will be in this section, no complex functionalities should be placed here, as it is just for declarations of variables and base functionalities.
 
