@@ -1,14 +1,15 @@
 #include "mbed.h"
+#include "C12832.h"
 
 #define PWM_FREQUENCY 1000.0f
 #define DEFAULT_PWM 0.5f
 
-PwmOut PWM_LEFT(PA_5);
-PwmOut PWM_RIGHT(PA_6);
+PwmOut PWM_LEFT(PC_9);
+PwmOut PWM_RIGHT(PC_8);
 
-DigitalOut MDBEnable(D7);
-DigitalOut BPE1(D8);
-DigitalOut BPE2(D9);
+DigitalOut MDBEnable(PA_8);
+DigitalOut BPE1(PC_0);
+DigitalOut BPE2(PC_1);
 class Potentiometer                                                     //Begin updated potentiometer class definition
 {
 private:                                                                //Private data member declaration
@@ -53,27 +54,19 @@ class SamplingPotentiometer : public Potentiometer{
         sampler.attach(callback(this, &SamplingPotentiometer::periodicSample), samplingPeriod);
         }
 };
-void setPWMDuty(float leftPWM, float rightPWM) {
-    if (leftPWM > 1.0f)  leftPWM = 1.0f;
-    if (leftPWM < 0.0f)  leftPWM = 0.0f;
-    if (rightPWM > 1.0f) rightPWM = 1.0f;
-    if (rightPWM < 0.0f) rightPWM = 0.0f;
-
-    PWM_LEFT.write(leftPWM);
-    PWM_RIGHT.write(rightPWM);
-}
-
 int main() {
+    C12832 lcd(D11, D13, D12, D7, D10); //LCD display
     SamplingPotentiometer potX(A0, 3.3f, 100.0f);
-    PWM_LEFT.period(1.0f / PWM_FREQUENCY);
-    PWM_RIGHT.period(1.0f / PWM_FREQUENCY);
-    setPWMDuty(0.5f, 0.5f);
-    MDBEnable.write(1); 
-    BPE1.write(1);
-    BPE2.write(1);
+    PWM_LEFT.period_us(50);
+    PWM_RIGHT.period_us(50);
+    PWM_LEFT.write(0.5f);
+    PWM_RIGHT.write(0.5f);
+    MDBEnable = 1;
+    BPE1 = 1;
+    BPE2 = 1;
     while (true) {
-        float potValue = potX.getCurrentSampleNorm();
-        setPWMDuty(potValue, potValue);
-        wait_ms(20); 
+        float potValue = 1 - potX.getCurrentSampleNorm();
+        PWM_LEFT.write(potValue);
+        PWM_RIGHT.write(potValue);
     }
 }
