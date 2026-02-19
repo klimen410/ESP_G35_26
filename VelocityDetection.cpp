@@ -15,11 +15,11 @@ VelocityDetection::VelocityDetection(PinName leftPin, PinName rightPin)
 }
 
 void VelocityDetection::leftRise() {
-    leftTicks++;
+    leftTicks++;        // counts up with every rising edge of the left encoderr
 }
 
 void VelocityDetection::rightRise() {
-    rightTicks++;
+    rightTicks++;       // counts up with every rising edge of the right encoder
 }
 
 int VelocityDetection::getLeftTicks() {
