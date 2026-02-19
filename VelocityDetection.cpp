@@ -2,7 +2,7 @@
 
 VelocityDetection::VelocityDetection(PinName leftPin, PinName rightPin)
 
-    // construct encoder using specified pin
+// construct encoder using specified pin
     : leftEncoder(leftPin),
       rightEncoder(rightPin),
       leftTicks(0),
