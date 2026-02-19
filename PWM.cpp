@@ -61,7 +61,7 @@ int main() {
     PWM_RIGHT.period_us(50);
     PWM_LEFT.write(0.5f);
     PWM_RIGHT.write(0.5f);
-    MDBEnable = 1;
+    MDBEnable =  1;
     BPE1 = 1;
     BPE2 = 1;
     while (true) {
