@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-#include "mbed.h"
+#include "mbed.h" 
 #include "C12832.h"
-=======
-#include "mbed.h" //test
->>>>>>> origin/main
 
 #define PWM_FREQUENCY 1000.0f
 #define DEFAULT_PWM 0.5f
