@@ -1,8 +1,15 @@
-#include "mbed.h" 
 #include "C12832.h"
+#include "mbed.h" 
+#include "QEI.h"
 
 #define PWM_FREQUENCY 1000.0f
 #define DEFAULT_PWM 0.5f
+
+#define WHEEL_DIAMETER 0.0796f //meters
+#define WHEEL_RADIUS (WHEEL_DIAMETER/2.0f) //meters
+#define GEAR_RATIO 15 //gearbox ratio of 15:1
+#define PI 3.14159265359f
+
 
 PwmOut PWM_LEFT(PC_9);
 PwmOut PWM_RIGHT(PC_8);
@@ -55,8 +62,12 @@ class SamplingPotentiometer : public Potentiometer{
         }
 };
 int main() {
-    C12832 lcd(D11, D13, D12, D7, D10); //LCD display
-    SamplingPotentiometer potX(A0, 3.3f, 100.0f);
+
+    C12832 LCD(D11, D13, D12, D7, D10);
+    Serial pc(USBTX, USBRX);
+
+    SamplingPotentiometer potLeft(A0, 3.3f, 100.0f);
+    SamplingPotentiometer potRight(A1, 3.3f, 100.0f);
     PWM_LEFT.period_us(50);
     PWM_RIGHT.period_us(50);
     PWM_LEFT.write(0.5f);
@@ -64,9 +75,57 @@ int main() {
     MDBEnable =  1;
     BPE1 = 1;
     BPE2 = 1;
+
+    QEI encoderLeft(PC_10, PC_12, NC, 256);
+    QEI encoderRight(PB_13, PB_14, NC, 256);
+
     while (true) {
-        float potValue = 1 - potX.getCurrentSampleNorm();
-        PWM_LEFT.write(potValue);
-        PWM_RIGHT.write(potValue);
+        float potValueLeft = 1 - potLeft.getCurrentSampleNorm();
+        float potValueRight = 1 - potRight.getCurrentSampleNorm();
+
+        float encoderLeft_current, encoderLeft_prev, encoderRight_current, encoderRight_prev, encoderLeft_tickrate, encoderRight_tickrate, time_curr, time_prev, sampletime, rightwheel_vel, leftwheel_vel, left_RPM, right_RPM;
+        encoderRight_current = 0;
+        encoderLeft_current = 0;
+
+        PWM_LEFT.write(potValueLeft);
+        PWM_RIGHT.write(potValueRight);
+
+        //resetting variables for sample
+        Timer time;
+        time_curr = 0;
+        time_prev = time_curr;
+
+        time.reset();
+        time.start();
+        encoderLeft.reset();
+        encoderRight.reset();
+
+        encoderLeft_prev = encoderLeft_current;
+        encoderRight_prev = encoderRight_current;
+
+        wait_ms(30); //sample time
+
+        time_curr = time.read();
+        sampletime = time_curr - time_prev;
+
+        encoderRight_current =  -1 * encoderRight.getPulses(); // multiply by -1 for clockwise to be +ve
+        encoderLeft_current = encoderLeft.getPulses();
+
+        encoderLeft_tickrate = (encoderLeft_current - encoderLeft_prev)/sampletime;
+        encoderRight_tickrate = (encoderRight_current - encoderRight_prev)/sampletime;
+
+        left_RPM = (encoderLeft_tickrate * 60)/(256 * 15);
+        right_RPM = (encoderRight_tickrate * 60)/(256 * 15);
+
+        LCD.locate(0,0);
+        LCD.printf("RPM of left wheel is %0.1f", left_RPM);
+
+        LCD.locate(0,8);
+        LCD.printf("RPM of right wheel is %0.1f", right_RPM);
+
+        LCD.locate(0,16);
+        LCD.printf("Pulses left: %0.1f  right: %0.1f", encoderLeft_current, encoderRight_current);
+
+
     }
 }
