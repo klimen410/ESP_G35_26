@@ -103,7 +103,7 @@ int main() {
         encoderLeft_prev = encoderLeft_current;
         encoderRight_prev = encoderRight_current;
 
-        wait_ms(30); //sample time
+        wait_ms(30); //sample tim
 
         time_curr = time.read();
         sampletime = time_curr - time_prev;
