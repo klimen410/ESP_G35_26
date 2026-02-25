@@ -1,0 +1,193 @@
+#include "C12832.h"
+#include "mbed.h" 
+#include "QEI.h"
+
+// --- Physical Constants ---
+#define WHEEL_DIAMETER 0.0796f          // meters
+#define GEAR_RATIO 15                   // 15:1 gearbox
+#define PI 3.14159265359f
+#define PPR 256                         // Pulses Per Revolution
+
+// --- PWM Settings ---
+#define STOP_PWM       0.5f
+#define DRIVE_SPEED    0.67f             // 0.2 offset from 0.5
+#define TURN_SPEED     0.655f
+
+// --- Distance Calculations ---
+// X4 encoding = 4 edges per pulse. Total counts per one wheel revolution:
+#define COUNTS_PER_REV   (PPR * 4 * GEAR_RATIO) 
+#define WHEEL_CIRC       (PI * WHEEL_DIAMETER)
+#define COUNTS_PER_METER (COUNTS_PER_REV / WHEEL_CIRC)
+
+// TARGETS
+#define TARGET_DIST_M    0.02f           // 90cm
+#define STRAIGHT_COUNTS  (int)(TARGET_DIST_M * COUNTS_PER_METER)
+
+#define WHEEL_BASE 0.148f               // Distance between wheels
+#define TURN_90_COUNTS  (int)((WHEEL_BASE / 2.0f) * (PI / 2.0f) * COUNTS_PER_METER *0.085f)
+#define TURN_180_COUNTS  (int)((WHEEL_BASE / 2.0f) * (PI / 2.0f) * COUNTS_PER_METER *0.03f)
+
+// --- Hardware Setup ---
+PwmOut PWM_LEFT(PC_9);
+PwmOut PWM_RIGHT(PC_8);
+DigitalOut MDBEnable(PA_8);
+DigitalOut BPE1(PC_0);
+DigitalOut BPE2(PC_1);
+C12832 LCD(D11, D13, D12, D7, D10);
+class Joystick{
+    private:
+    DigitalIn up, down, left, right, fire;
+    public:
+    Joystick(PinName u, PinName d, PinName l, PinName r, PinName f): up(u), down(d), left(l), right(r), fire(f){}
+    bool upP(void){return up.read() == 1;}
+    bool downP(void){return down.read() == 1;}
+    bool leftP(void){return left.read() == 1;}
+    bool rightP(void){return right.read() == 1;}
+    bool fireP(void){return fire.read() == 1;}
+};
+// --- Encoder Class ---
+class Encoder {
+private:
+    QEI wheel;
+public:
+    Encoder(PinName channelA, PinName channelB) : wheel(channelA, channelB, NC, PPR, QEI::X4_ENCODING) {}
+    void reset() { wheel.reset(); }
+    int getPulses() { return wheel.getPulses(); }
+};
+
+void stopMotors() {
+    PWM_LEFT.write(STOP_PWM);
+    PWM_RIGHT.write(STOP_PWM);
+    wait_ms(50);
+}
+
+// Moves straight for a specific distance while displaying RPM
+void drive90cm(Encoder &encLeft, Encoder &encRight) {
+    encLeft.reset();
+    encRight.reset();
+
+    Timer t;
+    int prevLeft = 0, prevRight = 0;
+    float sampleTime = 0.05; // 50ms sample rate for RPM calculation
+
+    // Start Motors
+    // If your buggy veers, adjust these slightly
+    PWM_LEFT.write(1.0f - DRIVE_SPEED); 
+    PWM_RIGHT.write(1.0f - DRIVE_SPEED); 
+
+    while (true) {
+        t.reset();
+        t.start();
+        
+        // Get current counts (adjusting for polarity)
+        int currLeft = encLeft.getPulses(); 
+        int currRight = -1*encRight.getPulses(); 
+        
+        int avgCounts = (currLeft + currRight) / 2;
+
+        // RPM Calculation logic from your snippet
+        float left_tickrate = (float)(currLeft - prevLeft) / sampleTime;
+        float right_tickrate = (float)(currRight - prevRight) / sampleTime;
+        
+        float left_RPM = (left_tickrate * 60.0f) / (float)COUNTS_PER_REV;
+        float right_RPM = (right_tickrate * 60.0f) / (float)COUNTS_PER_REV;
+
+        // Display Status
+        LCD.cls();
+        LCD.locate(0,0);
+        LCD.printf("Dist: %d / %d", avgCounts, STRAIGHT_COUNTS);
+        LCD.locate(0,10);
+        LCD.printf("L RPM: %0.1f", left_RPM);
+        LCD.locate(0,20);
+        LCD.printf("R RPM: %0.1f", right_RPM);
+
+        if (avgCounts >= STRAIGHT_COUNTS) break;
+
+        prevLeft = currLeft;
+        prevRight = currRight;
+
+        // Maintain consistent sampling time
+        while(t.read() < sampleTime); 
+    }
+    stopMotors();
+}
+
+void turnLeft90(Encoder &encLeft, Encoder &encRight) {
+    encLeft.reset();
+    encRight.reset();
+    
+    float offset = TURN_SPEED - STOP_PWM;
+    PWM_LEFT.write(1-(STOP_PWM-offset)); // Backwards
+    PWM_RIGHT.write(STOP_PWM - offset); // Forwards (mirrored)
+
+    while (true) {
+
+        
+        int counts = -1*encRight.getPulses(); 
+        LCD.locate(0,0);
+        LCD.printf("Turning Left...");
+        LCD.locate(0,10);
+        LCD.printf("Counts: %d / %d", counts, TURN_90_COUNTS);
+        
+        if (counts >= TURN_90_COUNTS) break;
+    }
+    stopMotors();
+}
+void turnRight90(Encoder &encLeft, Encoder &encRight) {
+    encLeft.reset();
+    encRight.reset();
+    
+    float offset = TURN_SPEED - STOP_PWM;
+    PWM_LEFT.write(STOP_PWM-offset); // Backwards
+    PWM_RIGHT.write(1-(STOP_PWM - offset)); // Forwards (mirrored)
+
+    while (true) {
+        int counts = encLeft.getPulses(); 
+        LCD.locate(0,0);
+        LCD.printf("Turning Right...");
+        LCD.locate(0,10);
+        LCD.printf("Counts: %d / %d", counts, TURN_90_COUNTS);
+        
+        if (counts >= TURN_90_COUNTS) break;
+    }
+    stopMotors();
+}
+
+int main() {
+    // PWM Period
+    PWM_LEFT.period_us(50);
+    PWM_RIGHT.period_us(50);
+    
+    // Enable Motor Driver
+    MDBEnable = 1; BPE1 = 1; BPE2 = 1;
+    stopMotors();
+
+    Encoder encoderLeft(PC_10, PC_12);
+    Encoder encoderRight(PB_13, PB_14);
+
+    Joystick Joystick(A2,A3,A4,A5,D4);
+
+    LCD.cls();
+    LCD.printf("Ready! Starting in 3s");
+    PWM_LEFT.write(0.5f);
+    PWM_RIGHT.write(0.5f);
+    wait(3.0);
+
+
+    while(1){
+        LCD.printf("Waiting for Fire Input");
+        if(Joystick.fireP()){
+            LCD.printf("Starting");
+            wait(2.0);
+             for (int i=0; i<4; i++){
+                drive90cm(encoderLeft, encoderRight);
+                turnLeft90(encoderLeft, encoderRight);
+            }
+            turnLeft90(encoderLeft, encoderRight);
+            for (int i=0; i<4; i++){
+                drive90cm(encoderLeft, encoderRight);
+                turnRight90(encoderLeft, encoderRight);
+            }
+        }
+    }
+}
