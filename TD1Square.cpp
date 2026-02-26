@@ -10,7 +10,7 @@
 
 // --- PWM Settings ---
 #define STOP_PWM       0.5f
-#define DRIVE_SPEED    0.67f             // 0.2 offset from 0.5
+#define DRIVE_SPEED    0.677f             // 0.2 offset from 0.5
 #define TURN_SPEED     0.655f
 
 // --- Distance Calculations ---
@@ -21,11 +21,11 @@
 
 // TARGETS
 #define TARGET_DIST_M    0.02f           // 90cm
-#define STRAIGHT_COUNTS  (int)(TARGET_DIST_M * COUNTS_PER_METER)
+#define STRAIGHT_COUNTS  1225
 
 #define WHEEL_BASE 0.148f               // Distance between wheels
-#define TURN_90_COUNTS  (int)((WHEEL_BASE / 2.0f) * (PI / 2.0f) * COUNTS_PER_METER *0.085f)
-#define TURN_180_COUNTS  (int)((WHEEL_BASE / 2.0f) * (PI / 2.0f) * COUNTS_PER_METER *0.03f)
+#define TURN_90_COUNTS  590
+#define TURN_70_COUNTS  400
 
 // --- Hardware Setup ---
 PwmOut PWM_LEFT(PC_9);
@@ -33,18 +33,8 @@ PwmOut PWM_RIGHT(PC_8);
 DigitalOut MDBEnable(PA_8);
 DigitalOut BPE1(PC_0);
 DigitalOut BPE2(PC_1);
+DigitalIn Fire(D4);
 C12832 LCD(D11, D13, D12, D7, D10);
-class Joystick{
-    private:
-    DigitalIn up, down, left, right, fire;
-    public:
-    Joystick(PinName u, PinName d, PinName l, PinName r, PinName f): up(u), down(d), left(l), right(r), fire(f){}
-    bool upP(void){return up.read() == 1;}
-    bool downP(void){return down.read() == 1;}
-    bool leftP(void){return left.read() == 1;}
-    bool rightP(void){return right.read() == 1;}
-    bool fireP(void){return fire.read() == 1;}
-};
 // --- Encoder Class ---
 class Encoder {
 private:
@@ -73,7 +63,7 @@ void drive90cm(Encoder &encLeft, Encoder &encRight) {
     // Start Motors
     // If your buggy veers, adjust these slightly
     PWM_LEFT.write(1.0f - DRIVE_SPEED); 
-    PWM_RIGHT.write(1.0f - DRIVE_SPEED); 
+    PWM_RIGHT.write(1.0f - DRIVE_SPEED+0.0075); 
 
     while (true) {
         t.reset();
@@ -111,8 +101,26 @@ void drive90cm(Encoder &encLeft, Encoder &encRight) {
     }
     stopMotors();
 }
-
 void turnLeft90(Encoder &encLeft, Encoder &encRight) {
+    encLeft.reset();
+    encRight.reset();
+    
+    float offset = TURN_SPEED - STOP_PWM;
+    PWM_LEFT.write(1-(STOP_PWM-offset)); // Backwards
+    PWM_RIGHT.write(STOP_PWM - offset); // Forwards (mirrored)
+
+    while (true) {        
+        int counts = -1*encRight.getPulses(); 
+        LCD.locate(0,0);
+        LCD.printf("Turning Left...");
+        LCD.locate(0,10);
+        LCD.printf("Counts: %d / %d", counts, TURN_90_COUNTS);
+        
+        if (counts >= TURN_90_COUNTS) break;
+    }
+    stopMotors();
+}
+void turnLeft70(Encoder &encLeft, Encoder &encRight) {
     encLeft.reset();
     encRight.reset();
     
@@ -125,11 +133,11 @@ void turnLeft90(Encoder &encLeft, Encoder &encRight) {
         
         int counts = -1*encRight.getPulses(); 
         LCD.locate(0,0);
-        LCD.printf("Turning Left...");
+        LCD.printf("Turning Left 70...");
         LCD.locate(0,10);
-        LCD.printf("Counts: %d / %d", counts, TURN_90_COUNTS);
+        LCD.printf("Counts: %d / %d", counts, TURN_70_COUNTS);
         
-        if (counts >= TURN_90_COUNTS) break;
+        if (counts >= TURN_70_COUNTS) break;
     }
     stopMotors();
 }
@@ -152,6 +160,25 @@ void turnRight90(Encoder &encLeft, Encoder &encRight) {
     }
     stopMotors();
 }
+void turnRight70(Encoder &encLeft, Encoder &encRight) {
+    encLeft.reset();
+    encRight.reset();
+    
+    float offset = TURN_SPEED - STOP_PWM;
+    PWM_LEFT.write(STOP_PWM-offset); // Backwards
+    PWM_RIGHT.write(1-(STOP_PWM - offset)); // Forwards (mirrored)
+
+    while (true) {
+        int counts = encLeft.getPulses(); 
+        LCD.locate(0,0);
+        LCD.printf("Turning Right...");
+        LCD.locate(0,10);
+        LCD.printf("Counts: %d / %d", counts, TURN_70_COUNTS);
+        
+        if (counts >= TURN_70_COUNTS) break;
+    }
+    stopMotors();
+}
 
 int main() {
     // PWM Period
@@ -159,35 +186,39 @@ int main() {
     PWM_RIGHT.period_us(50);
     
     // Enable Motor Driver
-    MDBEnable = 1; BPE1 = 1; BPE2 = 1;
+    MDBEnable = 0; BPE1 = 1; BPE2 = 1;
     stopMotors();
 
     Encoder encoderLeft(PC_10, PC_12);
     Encoder encoderRight(PB_13, PB_14);
-
-    Joystick Joystick(A2,A3,A4,A5,D4);
 
     LCD.cls();
     LCD.printf("Ready! Starting in 3s");
     PWM_LEFT.write(0.5f);
     PWM_RIGHT.write(0.5f);
     wait(3.0);
-
+    LCD.cls();
+    LCD.locate(0,0);
+    LCD.printf("Waiting for Fire Input");
 
     while(1){
-        LCD.printf("Waiting for Fire Input");
-        if(Joystick.fireP()){
+        if(Fire ==1 ){
+            LCD.cls();
+            LCD.locate(0,0);
             LCD.printf("Starting");
-            wait(2.0);
+            MDBEnable=1;
+            wait(1.0);
              for (int i=0; i<4; i++){
                 drive90cm(encoderLeft, encoderRight);
                 turnLeft90(encoderLeft, encoderRight);
             }
-            turnLeft90(encoderLeft, encoderRight);
+            turnLeft70(encoderLeft, encoderRight);
             for (int i=0; i<4; i++){
                 drive90cm(encoderLeft, encoderRight);
                 turnRight90(encoderLeft, encoderRight);
             }
+            turnRight70(encoderLeft, encoderRight);
+            MDBEnable=0;
         }
     }
 }
