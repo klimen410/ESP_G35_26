@@ -49,7 +49,7 @@ void drive90cm(Encoder &encLeft, Encoder &encRight) {
 
     Timer t;
     int prevLeft = 0, prevRight = 0;
-    float sampleTime = 0.05; // 50ms sample rate
+    float sampleTime = 0.01; // 10ms sample rate
     PWM_LEFT.write(1.0f - DRIVE_SPEED); 
     PWM_RIGHT.write(1.0f - DRIVE_SPEED+0.0075); 
 
