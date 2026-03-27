@@ -46,10 +46,12 @@ Located in TD1 folder, buggy is expected to have:
 <summary> TD2 </summary>
 Located in TD2 folder, buggy is expected to have:
 1. All of TD1 functionalities
+
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
 3. Interfacing with STM32 with line sensor variation
 4. Display of velocity from encoders
 5. Bluetooth communication
+
 </details>
 
 <details>
