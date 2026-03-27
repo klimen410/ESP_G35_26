@@ -91,7 +91,10 @@ This file contains all the defines and variables used for the buggy
 This folder should be used as the final working code used for the line race competition.
 </details>
 
+<details> <summary>
+  
 ## Common Errors and Troubleshooting
+</summary>
 
 ### Library & Dependencies Error
 
@@ -113,3 +116,4 @@ This folder should be used as the final working code used for the line race comp
 | :--- | :--- | :--- |
 | getCurrentSampleNorm() returns the same value | Using Potentiometer class which does not have a sampling function | Make sure to use SamplingPotentiometer to sample at a set frequency |
 | Some sensors do not reach the max value of 3.3 V | Some analog pins are shared with the shield, halving the voltage | Determine which pins are shared with the shield, and scale said pins with 2. |
+</details>
