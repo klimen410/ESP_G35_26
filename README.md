@@ -40,6 +40,7 @@ Located in TD1 folder, buggy is expected to have:
 1. Working PWM
 2. Working encoders
 3. 90cm length square function
+
 </details>
 
 <details>
@@ -60,6 +61,7 @@ Located in TD2 folder, buggy is expected to have:
 Located in TD3 folder, buggy is expected to have:
 1. All of TD2 functionalities
 2. 
+
 </details>
 
 <details>
@@ -67,6 +69,7 @@ Located in TD3 folder, buggy is expected to have:
 Located in TD4 folder, buggy is expected to have:
 1. All of TD3 functionalities
 2. 
+
 </details>
 
 <details>
