@@ -35,29 +35,31 @@ Components present:
 3. 2x encoders
 
 <details>
-<summary> TD1 </summary>
+<summary> 
+
+### TD1 </summary>
 Located in TD1 folder, buggy is expected to have:
 1. Working PWM
-2. Working encoders
-3. 90cm length square function
-
+2. Working Encoders
+3. 90 cm Square function
 </details>
 
 <details>
-<summary> TD2 </summary>
+<summary> 
+  
+### TD2 </summary>
 Located in TD2 folder, buggy is expected to have:
-
 1. All of TD1 functionalities
-
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
 3. Interfacing with STM32 with line sensor variation
 4. Display of velocity from encoders
 5. Bluetooth communication
-
 </details>
 
 <details>
-<summary> TD3 </summary>
+<summary> 
+  
+### TD3 </summary>
 Located in TD3 folder, buggy is expected to have:
 1. All of TD2 functionalities
 2. 
@@ -65,7 +67,9 @@ Located in TD3 folder, buggy is expected to have:
 </details>
 
 <details>
-<summary> TD4 </summary>
+<summary>
+  
+### TD4 </summary>
 Located in TD4 folder, buggy is expected to have:
 1. All of TD3 functionalities
 2. 
@@ -73,16 +77,43 @@ Located in TD4 folder, buggy is expected to have:
 </details>
 
 <details>
-<summary> R&D </summary>
+<summary> 
+  
+### R&D </summary>
 This folder only contains prototypes and acts as a cache if past code is needed to be accessed. This folder should not be used as working code.
 </details>
 
 <details>
-<summary> Variables </summary>
+<summary> 
+  
+### Variables </summary>
 This file contains all the defines and variables used for the buggy
 </details>
 
 <details>
-<summary> Final Code / Heats </summary>
+<summary> 
+  
+### Final Code / Heats </summary>
 This folder should be used as the final working code used for the line race competition.
 </details>
+
+### Library & Dependencies Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| Compiler fails to build | Libraries in Table 2.2 not properly imported to Arm Keil Studio workplace | Ensure .lib files are present for QEI and LCD, which can be found in the Arm website |
+| Header guard fails | #ifndef not properly implemented in library | Ensure Variables.h start with #ifndef VARIABLES_H and end with #endif. |
+
+### Motor Control Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| Motors jerking during initialisation | PWM not set to default value before bridge is enabled | Ensure MDBEnable, BPE1, and BPE2 are set to 0 to turn off motors before calling in the control loop. |
+| Motors remain stationary | Initialisation block absent from main() | Turn on MDBEnable, BPE1, and BPE2 to 1 to ensure duty cycle runs |
+
+### Sensor & Potentiometer Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| getCurrentSampleNorm() returns the same value | Using Potentiometer class which does not have a sampling function | Make sure to use SamplingPotentiometer to sample at a set frequency |
+| Some sensors do not reach the max value of 3.3 V | Some analog pins are shared with the shield, halving the voltage | Determine which pins are shared with the shield, and scale said pins with 2. |
