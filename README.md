@@ -91,7 +91,7 @@ This file contains all the defines and variables used for the buggy
 This folder should be used as the final working code used for the line race competition.
 </details>
 
-## Common Errors and Troubleshooting'
+## Common Errors and Troubleshooting
 
 ### Library & Dependencies Error
 
