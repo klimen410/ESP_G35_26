@@ -34,13 +34,6 @@ Components present:
 2. STM32F401RE microcontroller
 3. 2x encoders
 
-   <details>
-     <summary> ## TD1</summary>
-     ### Located in TD1 folder, buggy is expected to have:
-     1. Working PWM
-     2. Working encoders
-     3. 90 cm length square function
-   </details>
 <details>
 <summary> TD1 </summary>
 Located in TD1 folder, buggy is expected to have:
