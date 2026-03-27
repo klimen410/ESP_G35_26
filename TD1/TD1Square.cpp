@@ -1,23 +1,7 @@
 #include "C12832.h"
 #include "mbed.h" 
 #include "QEI.h"
-
-//Physical Constants 
-#define WHEEL_DIAMETER  0.0796f          // meters
-#define GEAR_RATIO      15               // 15:1 gearbox
-#define PI              3.14159265359f
-#define PPR             256              // Pulses Per Revolution
-
-//PWM Settings
-#define STOP_PWM       0.5f
-#define DRIVE_SPEED    0.677f            // 0.2 offset from 0.5
-#define TURN_SPEED     0.655f
-
-//X4 encoding = 4 edges per pulse. Total counts per one wheel revolution:
-#define COUNTS_PER_REV   (PPR * 4 * GEAR_RATIO)
-#define STRAIGHT_COUNTS  1225
-#define TURN_90_COUNTS   590
-#define TURN_70_COUNTS   400
+#include "Variables.h"
 
 //Hardware Setup
 PwmOut PWM_LEFT(PC_9);
@@ -33,8 +17,8 @@ private:
     QEI wheel;
 public:
     Encoder(PinName channelA, PinName channelB) : wheel(channelA, channelB, NC, PPR, QEI::X4_ENCODING) {}
-    void reset() { wheel.reset(); }
-    int getPulses() { return wheel.getPulses(); }
+    void reset() {wheel.reset();}
+    int getPulses() {return wheel.getPulses();}
 };
 
 void stopMotors() {
@@ -46,29 +30,21 @@ void stopMotors() {
 void drive90cm(Encoder &encLeft, Encoder &encRight) {
     encLeft.reset();
     encRight.reset();
-
     Timer t;
     int prevLeft = 0, prevRight = 0;
     float sampleTime = 0.01; // 10ms sample rate
     PWM_LEFT.write(1.0f - DRIVE_SPEED); 
     PWM_RIGHT.write(1.0f - DRIVE_SPEED+0.0075); 
-
     while (true) {
         t.reset();
         t.start();
-        
         int currLeft = encLeft.getPulses(); 
         int currRight = -1*encRight.getPulses(); 
-        
         int avgCounts = (currLeft + currRight) / 2;
-
-        // RPM Calculation logic
         float left_tickrate = (float)(currLeft - prevLeft) / sampleTime;
         float right_tickrate = (float)(currRight - prevRight) / sampleTime;
-        
         float left_RPM = (left_tickrate * 60.0f) / (float)COUNTS_PER_REV;
         float right_RPM = (right_tickrate * 60.0f) / (float)COUNTS_PER_REV;
-
         // Display Status
         LCD.cls();
         LCD.locate(0,0);
@@ -77,12 +53,9 @@ void drive90cm(Encoder &encLeft, Encoder &encRight) {
         LCD.printf("L RPM: %0.1f", left_RPM);
         LCD.locate(0,20);
         LCD.printf("R RPM: %0.1f", right_RPM);
-
         if (avgCounts >= STRAIGHT_COUNTS) break;
-
         prevLeft = currLeft;
         prevRight = currRight;
-
         while(t.read() < sampleTime); 
     }
     stopMotors();

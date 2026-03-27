@@ -1,23 +1,7 @@
 #include "C12832.h"
 #include "mbed.h" 
 #include "QEI.h"
-
-#define PWM_FREQUENCY 1000.0f
-#define DEFAULT_PWM 0.5f
-#define WHEEL_DISTANCE 0.1775
-#define PPR             256              // Pulses Per Revolution
-
-//PWM Settings
-#define STOP_PWM       0.5f
-#define DRIVE_SPEED    0.677f            // 0.2 offset from 0.5
-#define TURN_SPEED     0.655f
-
-
-#define WHEEL_DIAMETER 0.0796f //meters
-#define WHEEL_RADIUS (WHEEL_DIAMETER/2.0f) //meters
-#define GEAR_RATIO 15 //gearbox ratio of 15:1
-#define PI 3.14159265359f   
-#define TURN_180_COUNTS   1200
+#include "Variables.h"
 
 PwmOut PWM_LEFT(PC_9);
 PwmOut PWM_RIGHT(PC_8);
@@ -67,12 +51,11 @@ void turnAround180(Encoder &encLeft, Encoder &encRight) {
 int main() {
     PWM_LEFT.period_us(50);
     PWM_RIGHT.period_us(50);
-    
     MDBEnable = 0; BPE1 = 1; BPE2 = 1;
     stopMotors();
 
-    Encoder encoderLeft(PC_10, PC_12);
-    Encoder encoderRight(PB_13, PB_14);
+    Encoder ENCODER_LEFT(PC_10, PC_12);
+    Encoder ENCODER_RIGHT(PB_13, PB_14);
 
     LCD.cls();
     LCD.printf("Ready! Starting in 3s");
@@ -93,7 +76,7 @@ int main() {
                 LCD.printf("Turning 180");
                 wait(1.0);
                 MDBEnable=1;
-                turnAround180(encoderLeft, encoderRight);
+                turnAround180(ENCODER_LEFT, ENCODER_RIGHT);
                 MDBEnable=0;
                 BTin = 0;
             }

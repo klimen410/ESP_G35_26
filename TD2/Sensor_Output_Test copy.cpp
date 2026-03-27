@@ -17,8 +17,8 @@ int main(){
     float sensor4;
     float sensor5;
     float sensor6;
+    lcd.cls();
     while (1){
-        lcd.cls();
         //real value(0-3.3)
         sensor1 = pot1.read()*3.3;
         sensor2 = pot2.read()*3.3;
@@ -27,6 +27,7 @@ int main(){
         sensor5 = pot5.read()*3.3;
         sensor6 = pot6.read()*3.3;
         //Display values on LCD
+
         lcd.locate(0,0);
         lcd.printf("S1: %.3f", sensor1);
 
@@ -44,6 +45,7 @@ int main(){
 
         lcd.locate(60,20);
         lcd.printf("S6: %.3f", sensor6);
-        wait_ms(20);
+        
+        wait_ms(100);
     }
 }

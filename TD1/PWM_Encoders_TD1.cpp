@@ -1,15 +1,7 @@
 #include "C12832.h"
 #include "mbed.h" 
 #include "QEI.h"
-
-#define DEFAULT_PWM 0.5f
-
-#define WHEEL_DIAMETER 0.0796f //meters
-#define WHEEL_RADIUS (WHEEL_DIAMETER/2.0f) //meters
-#define GEAR_RATIO 15 //gearbox ratio of 15:1
-#define PI 3.14159265359f   
-
-
+#include "Variables.h"
 PwmOut PWM_LEFT(PC_9);
 PwmOut PWM_RIGHT(PC_8);
 
@@ -61,9 +53,7 @@ class SamplingPotentiometer : public Potentiometer{
         }
 };
 int main() {
-
     C12832 LCD(D11, D13, D12, D7, D10);
-
     SamplingPotentiometer potLeft(A0, 3.3f, 100.0f);
     SamplingPotentiometer potRight(A1, 3.3f, 100.0f);
     PWM_LEFT.period_us(50);
@@ -73,10 +63,8 @@ int main() {
     MDBEnable =  1;
     BPE1 = 1;
     BPE2 = 1;
-
     QEI encoderLeft(PC_10, PC_12, NC, 256);
     QEI encoderRight(PB_13, PB_14, NC, 256);
-
     while (true) {
         float potValueLeft = 1 - potLeft.getCurrentSampleNorm();
         float potValueRight = 1 - potRight.getCurrentSampleNorm();
