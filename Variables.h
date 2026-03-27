@@ -18,7 +18,7 @@
 #define TURN_180_COUNTS   1200
 
 //X4 encoding = 4 edges per pulse. Total counts per one wheel revolution:
-#define COUNTS_PER_REV   (PPR * 4 * GEAR_RATIO)
+#define COUNTS_PER_REV   256*15
 #define STRAIGHT_COUNTS  1225
 #define TURN_90_COUNTS   590
 #define TURN_70_COUNTS   400
