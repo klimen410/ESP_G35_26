@@ -43,7 +43,6 @@ Located in TD1 folder, buggy is expected to have:
 2. Working Encoders
 3. 90 cm Square function
 </details>
-
 <details>
 <summary> 
   
@@ -55,7 +54,6 @@ Located in TD2 folder, buggy is expected to have:
 4. Display of velocity from encoders
 5. Bluetooth communication
 </details>
-
 <details>
 <summary> 
   
@@ -65,7 +63,6 @@ Located in TD3 folder, buggy is expected to have:
 2. 
 
 </details>
-
 <details>
 <summary>
   
@@ -75,27 +72,26 @@ Located in TD4 folder, buggy is expected to have:
 2. 
 
 </details>
-
 <details>
 <summary> 
   
 ### R&D </summary>
 This folder only contains prototypes and acts as a cache if past code is needed to be accessed. This folder should not be used as working code.
 </details>
-
 <details>
 <summary> 
   
 ### Variables </summary>
 This file contains all the defines and variables used for the buggy
 </details>
-
 <details>
 <summary> 
   
 ### Final Code / Heats </summary>
 This folder should be used as the final working code used for the line race competition.
 </details>
+
+## Common Errors and Troubleshooting'
 
 ### Library & Dependencies Error
 
