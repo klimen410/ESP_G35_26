@@ -33,36 +33,50 @@ Components present:
 1. 6x TCRT5000 sensors
 2. STM32F401RE microcontroller
 3. 2x encoders
-
-<summary> ##TD1 </summary>
-Located in TD1 folder, buggy is expected to have:
+   
+<details>
+<summary> ## TD1 </summary>
+### Located in TD1 folder, buggy is expected to have:
 1. Working PWM
 2. Working encoders
 3. 90cm length square function
+</details>
 
-<summary> ##TD2 </summary>
-Located in TD2 folder, buggy is expected to have:
+<details>
+<summary> ## TD2 </summary>
+### Located in TD2 folder, buggy is expected to have:
 1. All of TD1 functionalities
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
 3. Interfacing with STM32 with line sensor variation
 4. Display of velocity from encoders
 5. Bluetooth communication
+</details>
 
-# TD3
-Located in TD3 folder, buggy is expected to have:
+<details>
+<summary> ## TD3 </summary>
+### Located in TD3 folder, buggy is expected to have:
 1. All of TD2 functionalities
 2. 
+</details>
 
-# TD4
-Located in TD4 folder, buggy is expected to have:
+<details>
+<summary> ## TD4 </summary>
+### Located in TD4 folder, buggy is expected to have:
 1. All of TD3 functionalities
 2. 
+</details>
 
-# R&D
+<details>
+<summary> ## R&D </summary>
 This folder only contains prototypes and acts as a cache if past code is needed to be accessed. This folder should not be used as working code.
+</details>
 
-# Variables
+<details>
+<summary> ## Variables </summary>
 This file contains all the defines and variables used for the buggy
+</details>
 
-# Final Code
+<details>
+<summary> ## Final Code / Heats </summary>
 This folder should be used as the final working code used for the line race competition.
+</details>
