@@ -1,5 +1,23 @@
 # University of Manchester ESP Group 35 2025/2026
 
+This Embedded Systems Project (ESP) API help developers to interact with a STM32F401RE Nucleo Platform using Mbed hardware abstraction to provide real-time data to a line-following buggy.
+This documentation so far explains how to implement these functions:
+- Control motor speed using potentiometers
+- Use X4 encoders to track wheel velocity
+- Execute basic functions using Bluetooth
+
+To ensure that the API functions as intended, the hardware must be wired to the following pins on the Nucleo-64 pins:
+  ### Pin Configuration Summary
+| Component | Pin(s) | Function |
+| :--- | :--- | :--- |
+| PWM_LEFT / RIGHT | PC_9, PC_8 | Controls speed of motor |
+| MDBEnable | PA_8 | Enables motor driver |
+| BPE1 / BPE2 | PC_0, PC_1 | Motor driver control signal |
+| ENCODER_LEFT / RIGHT | PC_10, PC_12, PB_13, PB_14 | Measures left & right wheel rotation |
+| potLeft / potRight | A0, A1 | Reads input voltage |
+| HM10 (TX / RX) | PA_11, PA_12 | Transmits and receives data from Bluetooth module |
+| LCD | D11, D13, D12, D7, D10 | Displays system data |
+
 This repository will have multiple parts to it: 
 1. TD1
 2. TD2
