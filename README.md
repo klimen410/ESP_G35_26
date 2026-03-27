@@ -43,7 +43,7 @@ Components present:
 </details>
 
 <details>
-<summary> ## TD2 </summary>
+<summary> **TD2** </summary>
 ### Located in TD2 folder, buggy is expected to have:
 1. All of TD1 functionalities
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
@@ -53,7 +53,7 @@ Components present:
 </details>
 
 <details>
-<summary> ## TD3 </summary>
+<summary> **TD3** </summary>
 ### Located in TD3 folder, buggy is expected to have:
 1. All of TD2 functionalities
 2. 
