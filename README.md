@@ -27,19 +27,20 @@ This repository will have multiple parts to it:
 6. Variables
 7. Final Code
 
+
 # Buggy Component Details
 Components present:
 1. 6x TCRT5000 sensors
 2. STM32F401RE microcontroller
 3. 2x encoders
 
-# TD1
+<summary> ##TD1 </summary>
 Located in TD1 folder, buggy is expected to have:
 1. Working PWM
 2. Working encoders
 3. 90cm length square function
 
-# TD2
+<summary> ##TD2 </summary>
 Located in TD2 folder, buggy is expected to have:
 1. All of TD1 functionalities
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
