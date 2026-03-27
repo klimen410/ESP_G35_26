@@ -1,5 +1,23 @@
 # University of Manchester ESP Group 35 2025/2026
 
+This Embedded Systems Project (ESP) API help developers to interact with a STM32F401RE Nucleo Platform using Mbed hardware abstraction to provide real-time data to a line-following buggy.
+This documentation so far explains how to implement these functions:
+- Control motor speed using potentiometers
+- Use X4 encoders to track wheel velocity
+- Execute basic functions using Bluetooth
+
+To ensure that the API functions as intended, the hardware must be wired to the following pins on the Nucleo-64 pins:
+  ### Pin Configuration Summary
+| Component | Pin(s) | Function |
+| :--- | :--- | :--- |
+| PWM_LEFT / RIGHT | PC_9, PC_8 | Controls speed of motor |
+| MDBEnable | PA_8 | Enables motor driver |
+| BPE1 / BPE2 | PC_0, PC_1 | Motor driver control signal |
+| ENCODER_LEFT / RIGHT | PC_10, PC_12, PB_13, PB_14 | Measures left & right wheel rotation |
+| potLeft / potRight | A0, A1 | Reads input voltage |
+| HM10 (TX / RX) | PA_11, PA_12 | Transmits and receives data from Bluetooth module |
+| LCD | D11, D13, D12, D7, D10 | Displays system data |
+
 This repository will have multiple parts to it: 
 1. TD1
 2. TD2
@@ -9,41 +27,93 @@ This repository will have multiple parts to it:
 6. Variables
 7. Final Code
 
+
 # Buggy Component Details
 Components present:
 1. 6x TCRT5000 sensors
 2. STM32F401RE microcontroller
 3. 2x encoders
 
-# TD1
+<details>
+<summary> 
+
+### TD1 </summary>
 Located in TD1 folder, buggy is expected to have:
 1. Working PWM
-2. Working encoders
-3. 90cm length square function
-
-# TD2
+2. Working Encoders
+3. 90 cm Square function
+</details>
+<details>
+<summary> 
+  
+### TD2 </summary>
 Located in TD2 folder, buggy is expected to have:
 1. All of TD1 functionalities
 2. Working TCRT5000 sensor voltage variation on a stripboard/PCB
 3. Interfacing with STM32 with line sensor variation
 4. Display of velocity from encoders
 5. Bluetooth communication
-
-# TD3
+</details>
+<details>
+<summary> 
+  
+### TD3 </summary>
 Located in TD3 folder, buggy is expected to have:
 1. All of TD2 functionalities
 2. 
 
-# TD4
+</details>
+<details>
+<summary>
+  
+### TD4 </summary>
 Located in TD4 folder, buggy is expected to have:
 1. All of TD3 functionalities
 2. 
 
-# R&D
+</details>
+<details>
+<summary> 
+  
+### R&D </summary>
 This folder only contains prototypes and acts as a cache if past code is needed to be accessed. This folder should not be used as working code.
-
-# Variables
+</details>
+<details>
+<summary> 
+  
+### Variables </summary>
 This file contains all the defines and variables used for the buggy
-
-# Final Code
+</details>
+<details>
+<summary> 
+  
+### Final Code / Heats </summary>
 This folder should be used as the final working code used for the line race competition.
+</details>
+
+<details> <summary>
+  
+## Common Errors and Troubleshooting
+</summary>
+
+### Library & Dependencies Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| Compiler fails to build | Libraries in Table 2.2 not properly imported to Arm Keil Studio workplace | Ensure .lib files are present for QEI and LCD, which can be found in the Arm website |
+| Header guard fails | #ifndef not properly implemented in library | Ensure Variables.h start with #ifndef VARIABLES_H and end with #endif. |
+
+### Motor Control Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| Motors jerking during initialisation | PWM not set to default value before bridge is enabled | Ensure MDBEnable, BPE1, and BPE2 are set to 0 to turn off motors before calling in the control loop. |
+| Motors remain stationary | Initialisation block absent from main() | Turn on MDBEnable, BPE1, and BPE2 to 1 to ensure duty cycle runs |
+
+### Sensor & Potentiometer Error
+
+| Error | Possible Cause | Recommended Fixes |
+| :--- | :--- | :--- |
+| getCurrentSampleNorm() returns the same value | Using Potentiometer class which does not have a sampling function | Make sure to use SamplingPotentiometer to sample at a set frequency |
+| Some sensors do not reach the max value of 3.3 V | Some analog pins are shared with the shield, halving the voltage | Determine which pins are shared with the shield, and scale said pins with 2. |
+</details>
