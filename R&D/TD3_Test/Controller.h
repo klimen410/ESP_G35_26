@@ -6,11 +6,11 @@
 
 class BuggyEncoder {
 private:
-    QEI wheel;
     int ppr;
+    QEI wheel;
 public:
     BuggyEncoder(PinName channelA, PinName channelB, int Ppr) 
-        : wheel(channelA, channelB, NC, ppr, QEI::X4_ENCODING), ppr(Ppr) {}
+        : ppr(Ppr), wheel(channelA, channelB, NC, ppr, QEI::X4_ENCODING) {}
 
     void reset() { wheel.reset(); }
     int getPulses() { return wheel.getPulses(); }
@@ -31,7 +31,7 @@ private:
     float maxIntegral;
 
 public:
-    PISystem(float Kp, float Ki, float maxI = 0.5f) 
+    PISystem(float Kp, float Ki, float maxI = 5.0f) 
         : kp(Kp), ki(Ki), targetRPM(0), integralError(0), maxIntegral(maxI) {}
 
     void setTargetSpeed(float rpm) {
@@ -46,13 +46,10 @@ public:
         if (integralError < -maxIntegral) integralError = -maxIntegral;
 
         float output = (kp * error) + (ki * integralError);
-        
-        float pwmValue = 0.5f + output;
-
-        if (pwmValue > 1.0f) pwmValue = 1.0f;
-        if (pwmValue < 0.0f) pwmValue = 0.0f;
-        
-        return pwmValue;
+        float maxOutput = 1.0f; 
+        if (output > maxOutput) output = maxOutput;
+        if (output < -maxOutput) output = -maxOutput;
+        return output;
     }
     
     void reset() {
