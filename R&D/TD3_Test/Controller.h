@@ -46,7 +46,7 @@ public:
         if (integralError < -maxIntegral) integralError = -maxIntegral;
 
         float output = (kp * error) + (ki * integralError);
-        float maxOutput = 1.0f; 
+        float maxOutput = 1.0f;  
         if (output > maxOutput) output = maxOutput;
         if (output < -maxOutput) output = -maxOutput;
         return output;

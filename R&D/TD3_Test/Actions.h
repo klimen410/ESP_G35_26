@@ -15,6 +15,7 @@ private:
     PISystem &piLeft, &piRight;
     C12832 &lcd;
     public:
+
     BuggyActions(PwmOut &l, PwmOut &r, BuggyEncoder &el, BuggyEncoder &er, C12832 &Lcd, PISystem &pl, PISystem &pr)
         : pwmLeft(l), pwmRight(r), encLeft(el), encRight(er), lcd(Lcd), piLeft(pl), piRight(pr) {}
 
@@ -36,11 +37,12 @@ private:
 
         while (true) {
             int counts = abs(encRight.getPulses()); 
+            
             lcd.locate(0,0);
             lcd.printf("Action: Turning 180");
             lcd.locate(0,10);
             lcd.printf("Progress: %d / %d", counts, targetCounts);
-
+            
             if (counts >= targetCounts) break;
         }
         stopMotors();
